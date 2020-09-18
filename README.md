@@ -22,14 +22,14 @@ import (
 	"flag"
 	"fmt"
 
-	ur "github.com/bitmark-inc/go-seedtool-cli"
+	"github.com/bitmark-inc/go-seedtool-cli"
 )
 
 func Run() {
-	bw := ur.EncodeFromHex("8935a8068526d84da555cdb741a3b8a8", ur.URI)
+	bw := ur.EncodeFromHex("8935a8068526d84da555cdb741a3b8a8", seedtool.URI)
 	fmt.Println("Encode: ", bw)
 
-	s := ur.DecodeToHex(bw, ur.URI)
+	s := seedtool.DecodeToHex(bw, seedtool.URI)
 	fmt.Println("Decode: ", s)
 }
 
