@@ -18,15 +18,16 @@ const (
 )
 
 func Encode(b []byte, style WordStyle) string {
-	p := C.bytewords_encode(unsafe.Pointer(&b[0]), C.ulong(len(b)))
-	s := C.GoString(p)
-	return s
+	p := (*C.uchar)(&b[0])
+	ret := C.bytewords_encode(p, C.ulong(len(b)))
+	return C.GoString(ret)
 }
 
 func Decode(hex string, style WordStyle) []byte {
 	var size C.ulong
+
 	p := C.bytewords_decode(&size, C.CString(hex))
-	b := C.GoBytes(p, C.int(size))
+	b := C.GoBytes(unsafe.Pointer(p), C.int(size))
 	return b
 }
 

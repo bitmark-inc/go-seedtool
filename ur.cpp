@@ -2,10 +2,9 @@
 #include "ur-wrap.hpp"
 #include "ur.h"
 
-char *bytewords_encode(void *bytes, size_t len)
+char *bytewords_encode(uint8_t *bin, size_t bin_sz)
 {
-    uint8_t *start = (uint8_t *)bytes;
-    auto encoded = ur::Bytewords::encode(ur::Bytewords::style::uri, ur::ByteVector(start, start + len));
+    auto encoded = ur::Bytewords::encode(ur::Bytewords::style::uri, ur::ByteVector(bin, bin + bin_sz));
     int n = encoded.length();
 
     char *encoded_string = new char[n + 1];
@@ -14,13 +13,13 @@ char *bytewords_encode(void *bytes, size_t len)
     return encoded_string;
 }
 
-void *bytewords_decode(size_t *bin_sz, char *encoded_hex)
+uint8_t *bytewords_decode(size_t *bin_sz, char *words)
 {
-    std::string encoded_hex_string(encoded_hex);
-    auto buf = ur::Bytewords::decode(ur::Bytewords::style::uri, encoded_hex_string);
+    std::string words_string(words);
+    auto buf = ur::Bytewords::decode(ur::Bytewords::style::uri, words_string);
     *bin_sz = buf.size();
 
-    uint8_t *bin = (uint8_t *)malloc(*bin_sz + 1);
+    uint8_t *bin = new uint8_t[*bin_sz + 1];
     memcpy(bin, &buf[0], *bin_sz);
 
     return bin;

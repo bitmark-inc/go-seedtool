@@ -9,11 +9,8 @@
 extern "C"
 {
 #endif
-
-    typedef void *UR;
-    char *bytewords_encode(void *bytes, size_t len);
-    void *bytewords_decode(size_t *bin_sz, char *encoded_hex);
-
+    char *bytewords_encode(uint8_t *bin, size_t bin_sz);
+    uint8_t *bytewords_decode(size_t *bin_sz, char *words);
 #ifdef __cplusplus
 }
 #endif
