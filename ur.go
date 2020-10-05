@@ -2,6 +2,7 @@ package seedtool
 
 // #cgo LDFLAGS: -L/usr/local/lib -lbc-ur
 // #cgo CXXFLAGS: -std=c++17
+// #include <stdlib.h> // without this the `C.free` will not be found
 // #include "ur.h"
 import "C"
 import (
@@ -27,7 +28,10 @@ func Encode(b []byte, style WordStyle) string {
 func Decode(hex string, style WordStyle) []byte {
 	var size C.ulong
 
-	p := C.bytewords_decode(&size, C.CString(hex))
+	cs := C.CString(hex)
+	defer C.free(unsafe.Pointer(cs))
+
+	p := C.bytewords_decode(&size, cs)
 	b := C.GoBytes(unsafe.Pointer(p), C.int(size))
 	return b
 }
@@ -62,6 +66,7 @@ func URDecodeSeed(urParts []string) []byte {
 	cParts := make([]*C.char, len(urParts))
 	for i := 0; i < len(cParts); i++ {
 		cs := C.CString(urParts[i])
+		defer C.free(unsafe.Pointer(cs)) // can not free here
 		cParts[i] = cs
 	}
 
