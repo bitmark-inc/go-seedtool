@@ -6,6 +6,7 @@ package seedtool
 import "C"
 import (
 	"encoding/hex"
+	"strings"
 	"unsafe"
 )
 
@@ -43,4 +44,29 @@ func EncodeFromHex(s string, style WordStyle) string {
 func DecodeToHex(s string, style WordStyle) string {
 	src := Decode(s, style)
 	return hex.EncodeToString(src)
+}
+
+// UREncodeSeed accepts a CBOR buffer of a seed and returns UR strings
+func UREncodeSeed(seed []byte, fragementSize uint64) []string {
+	fSize := C.ulong(fragementSize)
+
+	p := (*C.uchar)(&seed[0])
+	ret := C.ur_encode_seed(p, C.ulong(len(seed)), fSize)
+
+	return strings.Split(C.GoString(ret), "\n")
+}
+
+// URDecodeSeed accepts a CBOR buffer of a seed and returns UR strings
+func URDecodeSeed(urParts []string) []byte {
+
+	cParts := make([]*C.char, len(urParts))
+	for i := 0; i < len(cParts); i++ {
+		cs := C.CString(urParts[i])
+		cParts[i] = cs
+	}
+
+	var retSize C.ulong
+	// ret := C.ur_decode_seed(&retSize, (**C.char)(cParts))
+	ret := C.ur_decode_seed(&retSize, C.ulong(len(urParts)), &cParts[0])
+	return C.GoBytes(unsafe.Pointer(ret), C.int(retSize))
 }
